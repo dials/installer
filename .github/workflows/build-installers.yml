@@ -1,0 +1,59 @@
+name: Build installers
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: DIALS version to build
+        required: true
+        default: 3.29.0
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux x86_64
+            os: ubuntu-latest
+          - name: macOS x86_64
+            os: macos-13
+          - name: macOS arm64
+            os: macos-14
+          - name: Windows x86_64
+            os: windows-latest
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up conda with constructor
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          channels: conda-forge
+          conda-remove-defaults: true
+
+      - name: Install constructor
+        run: conda install -y constructor
+
+      - name: Build installers
+        env:
+          DIALS_VERSION: ${{ inputs.version }}
+        run: constructor . --output-dir dist
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.os }}
+          path: |
+            dist/*.sh
+            dist/*.pkg
+            dist/*.exe
+          if-no-files-found: error
