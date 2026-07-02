@@ -18,8 +18,10 @@ jobs:
         include:
           - name: Linux x86_64
             os: ubuntu-latest
+          - name: macOS x86_64
+            os: macos-26-intel
           - name: macOS arm64
-            os: macos-14
+            os: macos-latest
           - name: Windows x86_64
             os: windows-latest
 
