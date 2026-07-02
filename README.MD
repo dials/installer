@@ -28,3 +28,6 @@ on your `PATH`. After installing, activate DIALS for the current session with:
 - Windows (PowerShell): `. .\setpaths.ps1`
 
 These scripts live in the installation directory.
+
+On Windows the installer also adds a **Launch DIALS environment** entry to the
+Start menu, which opens a command window with DIALS already on `PATH`.
