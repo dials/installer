@@ -16,3 +16,15 @@ $ . dials
 ```
 
 For more information please go to https://dials.github.io/
+
+## Activating an installer build
+
+The constructor installers (built from `construct.yaml`) expose only the DIALS
+programs, so activating DIALS does not put all of the bundled conda environment
+on your `PATH`. After installing, activate DIALS for the current session with:
+
+- Linux / macOS: `. setpaths.sh`
+- Windows (cmd): `setpaths.bat`
+- Windows (PowerShell): `. .\setpaths.ps1`
+
+These scripts live in the installation directory.
