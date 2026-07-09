@@ -7,6 +7,7 @@ mkdir "%PREFIX%\dialsbin" 2>nul
 for %%P in (dials xia2 dxtbx cctbx) do (
     copy /y "%PREFIX%\Scripts\%%P*.bat" "%PREFIX%\dialsbin\" >nul 2>&1
     copy /y "%PREFIX%\Scripts\%%P*.exe" "%PREFIX%\dialsbin\" >nul 2>&1
+    copy /y "%PREFIX%\Scripts\%%P*-script.py" "%PREFIX%\dialsbin\" >nul 2>&1
 )
 
 rem cmd:        run  setpaths.bat  to activate DIALS for the current session.
