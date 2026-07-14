@@ -78,9 +78,17 @@ rem integration, ship a menuinst Menu/dials.json in a conda package instead.
 rem This stage is wrapped in try/catch and always exits 0 from PowerShell,
 rem and its result is logged rather than allowed to fail the whole script -
 rem a missing shortcut should never block installation.
+rem Use the full path to powershell.exe: the installer's PATH is sanitized
+rem and does not necessarily include %SystemRoot%\System32\WindowsPowerShell\v1.0.
 rem ----------------------------------------------------------------------
 echo [Stage 5] Creating Start Menu shortcut >> "%LOG%"
-powershell -NoProfile -Command ^
+set "POWERSHELL_EXE=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
+if not exist "%POWERSHELL_EXE%" (
+    echo [Stage 5] WARNING: %POWERSHELL_EXE% not found, trying 'powershell' on PATH >> "%LOG%"
+    set "POWERSHELL_EXE=powershell"
+)
+
+"%POWERSHELL_EXE%" -NoProfile -Command ^
     "try {" ^
     "  $W = New-Object -ComObject WScript.Shell;" ^
     "  $Dir = Join-Path $W.SpecialFolders('Programs') 'DIALS';" ^
