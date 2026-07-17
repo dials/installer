@@ -95,7 +95,7 @@ if not exist "%POWERSHELL_EXE%" (
     "  [void](New-Item -ItemType Directory -Force -Path $Dir);" ^
     "  $S = $W.CreateShortcut((Join-Path $Dir 'Launch DIALS environment.lnk'));" ^
     "  $S.TargetPath = '%PREFIX%\dials_env.bat';" ^
-    "  $S.IconLocation = 'dials_icon.ico';" ^
+    "  $S.IconLocation = 'icon.ico,0';" ^
     "  $S.WorkingDirectory = $env:USERPROFILE;" ^
     "  $S.Save();" ^
     "  Write-Output 'Shortcut created successfully'" ^
