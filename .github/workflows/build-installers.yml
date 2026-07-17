@@ -33,6 +33,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Fetch DIALS LICENSE
+        env:
+          DIALS_VERSION: ${{ inputs.version }}
+        run: |
+          curl -fsSL "https://raw.githubusercontent.com/dials/dials/v${DIALS_VERSION}/LICENSE" -o LICENSE
+
       - name: Set up conda with constructor
         uses: conda-incubator/setup-miniconda@v4
         with:
