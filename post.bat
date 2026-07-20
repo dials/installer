@@ -24,6 +24,18 @@ for %%P in (dials xia2 dxtbx cctbx) do (
 )
 echo [Stage 1] Dispatcher copy complete (missing patterns are expected and non-fatal) >> "%LOG%"
 
+echo [Stage 1] Writing python.bat shim >> "%LOG%"
+(
+    echo @echo off
+    echo "%PREFIX%\python.exe" %%*
+    echo exit /b %%ERRORLEVEL%%
+) > "%PREFIX%\dialsbin\python.bat" 2>>"%LOG%"
+if exist "%PREFIX%\dialsbin\python.bat" (
+    echo [Stage 1] python.bat shim OK >> "%LOG%"
+) else (
+    echo [Stage 1] WARNING: python.bat shim not written >> "%LOG%"
+)
+
 rem ----------------------------------------------------------------------
 rem Stage 2: cmd activation script.
 rem ----------------------------------------------------------------------
