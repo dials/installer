@@ -14,4 +14,4 @@ installer_type: all
 specs:
   - dials =={{ version }}
   - xia2
-  - pyside2
+  - pyside6
