@@ -29,9 +29,7 @@ rem Stage 2: cmd activation script.
 rem ----------------------------------------------------------------------
 echo [Stage 2] Writing setpaths.bat >> "%LOG%"
 (
-    echo @set "PATH=%PREFIX%\dialsbin;%%PATH%%"
-    rem If DIALS programs fail to find DLLs, also expose conda's core libs:
-    rem echo @set "PATH=%PREFIX%\Library\bin;%%PATH%%"
+    echo @set "PATH=%PREFIX%\dialsbin;%PREFIX%\Library\bin;%%PATH%%"
 ) > "%PREFIX%\setpaths.bat" 2>>"%LOG%"
 if exist "%PREFIX%\setpaths.bat" (
     echo [Stage 2] setpaths.bat OK >> "%LOG%"
@@ -44,9 +42,7 @@ rem Stage 3: PowerShell activation script.
 rem ----------------------------------------------------------------------
 echo [Stage 3] Writing setpaths.ps1 >> "%LOG%"
 (
-    echo $env:PATH = "%PREFIX%\dialsbin;$env:PATH"
-    rem If DIALS programs fail to find DLLs, also expose conda's core libs:
-    rem echo $env:PATH = "%PREFIX%\Library\bin;$env:PATH"
+    echo $env:PATH = "%PREFIX%\dialsbin;%PREFIX%\Library\bin;$env:PATH"
 ) > "%PREFIX%\setpaths.ps1" 2>>"%LOG%"
 if exist "%PREFIX%\setpaths.ps1" (
     echo [Stage 3] setpaths.ps1 OK >> "%LOG%"
