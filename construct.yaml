@@ -3,6 +3,7 @@ name: DIALS
 version: "{{ version }}"
 channels:
   - "https://conda.anaconda.org/conda-forge/"
+  - "https://anaconda.org/channels/ndevenish"
 license_file: LICENSE
 welcome_image: dials_logo_164x314.png
 header_image: dials_header_150x57.png
@@ -14,4 +15,4 @@ installer_type: all
 specs:
   - dials =={{ version }}
   - xia2
-  - pyside6
+  - dui2
