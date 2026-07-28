@@ -7,6 +7,12 @@ on:
         description: DIALS version to build
         required: true
         default: 3.29.0
+      launcher_channel:
+        description: >-
+          anaconda.org channel to pull dials-launcher from. Must already hold
+          a build of dials-launcher matching the version above.
+        required: true
+        default: dials
 
 jobs:
   build:
@@ -52,6 +58,7 @@ jobs:
       - name: Build installers
         env:
           DIALS_VERSION: ${{ inputs.version }}
+          DIALS_LAUNCHER_CHANNEL: ${{ inputs.launcher_channel }}
         run: constructor . --output-dir dist
 
       - name: Upload artifacts

@@ -1,16 +1,25 @@
 {% set version = environ.get("DIALS_VERSION", "3.29.0") %}
+{% set launcher_channel = environ.get("DIALS_LAUNCHER_CHANNEL", "dials") %}
 name: DIALS
 version: "{{ version }}"
 channels:
+  # dials-launcher is built from conda-recipe/ and published by the
+  # "Build conda package" workflow; everything else comes from conda-forge.
+  - "https://conda.anaconda.org/{{ launcher_channel }}/"
   - "https://conda.anaconda.org/conda-forge/"
 license_file: LICENSE
 welcome_image: dials_logo_164x314.png
 header_image: dials_header_150x57.png
 icon_image: dials_icon_256x256.png
-post_install: post.sh  # [unix]
-post_install: post.bat # [win]
 default_prefix: "$HOME/dials/v{{ version }}"  # [unix]
 installer_type: all
 specs:
   - dials =={{ version }}
   - xia2
+  # Ships dialsbin/, setpaths.*, dials_env.* and the menu entry -- the work
+  # post.sh/post.bat used to do at install time.
+  - dials-launcher =={{ version }}
+# Restrict shortcut creation to dials-launcher, so no menu entry shipped by a
+# dependency is created by accident.
+menu_packages:
+  - dials-launcher

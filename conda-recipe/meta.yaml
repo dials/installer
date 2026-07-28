@@ -1,0 +1,57 @@
+{% set version = environ.get("DIALS_VERSION", "3.29.0") %}
+
+package:
+  name: dials-launcher
+  version: "{{ version }}"
+
+build:
+  number: 0
+  # Everything shipped here locates itself relative to its own path, so no
+  # build prefix is embedded in any file and there is nothing to rewrite on
+  # install -- the installation directory can even be moved afterwards.
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
+
+requirements:
+  # dials and friends must be in `host` so that their dispatchers are present
+  # in $PREFIX at build time -- that is how make_shims.py enumerates them.
+  # Building this package therefore resolves the whole DIALS stack.
+  host:
+    - python
+    - dials =={{ version }}
+    - xia2
+  run:
+    - dials =={{ version }}
+    - xia2
+
+test:
+  commands:
+    - test -f $PREFIX/setpaths.sh                              # [unix]
+    - test -f $PREFIX/Menu/dials-launcher.json                 # [unix]
+    - test -x $PREFIX/dialsbin/dials.version                   # [unix]
+    - $PREFIX/dialsbin/dials.version                           # [unix]
+    - if not exist %PREFIX%\setpaths.bat exit 1                # [win]
+    - if not exist %PREFIX%\Menu\dials-launcher.json exit 1    # [win]
+    - if not exist %PREFIX%\dialsbin\dials.version.bat exit 1  # [win]
+    - call %PREFIX%\dialsbin\dials.version.bat                 # [win]
+
+about:
+  home: https://dials.github.io/
+  license: BSD-3-Clause
+  license_family: BSD
+  summary: PATH activation scripts and menu entries for a DIALS installation
+  description: |
+    Ships the pieces that make an installed DIALS usable without putting the
+    whole bundled conda environment on PATH:
+
+      * dialsbin/ -- a forwarder for each DIALS, xia2, dxtbx and cctbx command
+      * setpaths.sh / setpaths.bat / setpaths.ps1 -- per-shell activation
+      * dials_env.sh / dials_env.bat -- launch a shell with DIALS on PATH
+      * Menu/dials-launcher.json -- a menuinst "Launch DIALS environment" entry
+
+    This replaces the post-install scripts the constructor installers used to
+    run, so that conda owns these files and removes them on uninstall.
+
+extra:
+  recipe-maintainers:
+    - ndevenish

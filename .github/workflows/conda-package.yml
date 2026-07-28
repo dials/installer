@@ -1,0 +1,149 @@
+name: Build conda package
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - conda-recipe/**
+      - .github/workflows/conda-package.yml
+  pull_request:
+    paths:
+      - conda-recipe/**
+      - .github/workflows/conda-package.yml
+  workflow_dispatch:
+    inputs:
+      version:
+        description: DIALS version to build against
+        required: true
+        default: 3.29.0
+      channel:
+        description: >-
+          anaconda.org channel (user or organisation) to upload to. Leave empty
+          to build without uploading.
+        required: false
+        default: ""
+      label:
+        description: anaconda.org label to upload under
+        required: false
+        default: main
+      force:
+        description: Overwrite packages that already exist on the channel
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  group: conda-package-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Consumed by conda-recipe/meta.yaml; keep the fallback in step with the
+  # default there and in construct.yaml.
+  DIALS_VERSION: ${{ inputs.version || '3.29.0' }}
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux x86_64
+            os: ubuntu-latest
+            subdir: linux-64
+          - name: macOS x86_64
+            os: macos-26-intel
+            subdir: osx-64
+          - name: macOS arm64
+            os: macos-latest
+            subdir: osx-arm64
+          - name: Windows x86_64
+            os: windows-latest
+            subdir: win-64
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v4
+        with:
+          miniforge-version: latest
+          channels: conda-forge
+          conda-remove-defaults: true
+
+      - name: Install conda-build
+        run: conda install -y conda-build
+
+      # The DIALS stack in `host` makes for deep build trees, so keep the build
+      # root short enough to stay clear of the Windows MAX_PATH limit.
+      - name: Build package
+        run: conda build conda-recipe --output-folder dist --croot "${CONDA_BLD_PATH}"
+        env:
+          CONDA_BLD_PATH: ${{ runner.os == 'Windows' && 'C:\bld' || format('{0}/bld', runner.temp) }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: conda-package-${{ matrix.subdir }}
+          path: |
+            dist/${{ matrix.subdir }}/*.conda
+            dist/${{ matrix.subdir }}/*.tar.bz2
+          if-no-files-found: error
+
+  publish:
+    name: Upload to anaconda.org
+    needs: build
+    if: inputs.channel != ''
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - name: Collect packages
+        uses: actions/download-artifact@v5
+        with:
+          path: dist
+          pattern: conda-package-*
+
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v4
+        with:
+          miniforge-version: latest
+          channels: conda-forge
+          conda-remove-defaults: true
+
+      - name: Install anaconda-client
+        run: conda install -y anaconda-client
+
+      - name: Upload
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          CHANNEL: ${{ inputs.channel }}
+          LABEL: ${{ inputs.label }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          if [[ -z "${ANACONDA_API_TOKEN}" ]]; then
+            echo "::error::ANACONDA_TOKEN secret is not set" >&2
+            exit 1
+          fi
+
+          mapfile -t packages < <(find dist \( -name '*.conda' -o -name '*.tar.bz2' \) | sort)
+          if [[ ${#packages[@]} -eq 0 ]]; then
+            echo "::error::No packages found to upload" >&2
+            exit 1
+          fi
+          printf 'Uploading to %s/%s:\n' "${CHANNEL}" "${LABEL}"
+          printf '  %s\n' "${packages[@]}"
+
+          args=(--user "${CHANNEL}" --label "${LABEL}")
+          if [[ "${FORCE}" == "true" ]]; then
+            args+=(--force)
+          fi
+          anaconda upload "${args[@]}" "${packages[@]}"
