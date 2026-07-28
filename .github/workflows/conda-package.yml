@@ -78,8 +78,11 @@ jobs:
           channels: conda-forge
           conda-remove-defaults: true
 
+      # `conda build` is a subcommand plugin of whichever conda is on PATH, so
+      # conda-build has to go into base -- installing it into the activated
+      # environment leaves `conda build` an unknown command.
       - name: Install conda-build
-        run: conda install -y conda-build
+        run: conda install -y -n base conda-build
 
       # The DIALS stack in `host` makes for deep build trees, so keep the build
       # root short enough to stay clear of the Windows MAX_PATH limit.
@@ -120,7 +123,7 @@ jobs:
           conda-remove-defaults: true
 
       - name: Install anaconda-client
-        run: conda install -y anaconda-client
+        run: conda install -y -n base anaconda-client
 
       - name: Upload
         env:
