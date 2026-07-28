@@ -1,12 +1,7 @@
 {% set version = environ.get("DIALS_VERSION", "3.29.0") %}
-{% set launcher_channel = environ.get("DIALS_LAUNCHER_CHANNEL", "DiamondLightSource") %}
 name: DIALS
 version: "{{ version }}"
 channels:
-  # dials-launcher is built from conda-recipe/ and published by the
-  # "Build dials-launcher package" workflow; everything else comes from
-  # conda-forge.
-  - "https://conda.anaconda.org/{{ launcher_channel }}/"
   - "https://conda.anaconda.org/conda-forge/"
 license_file: LICENSE
 welcome_image: dials_logo_164x314.png
@@ -19,7 +14,13 @@ specs:
   - xia2
   # Ships dialsbin/, setpaths.*, dials_env.* and the menu entry -- the work
   # post.sh/post.bat used to do at install time.
-  - dials-launcher =={{ version }}
+  #
+  # Qualified with channel:: rather than adding DiamondLightSource to
+  # `channels` above, deliberately: that channel carries packages whose names
+  # collide with conda-forge, and this way it is consulted for this one spec
+  # only. Everything else, including this package's dependencies, still
+  # resolves from conda-forge alone.
+  - DiamondLightSource::dials-launcher =={{ version }}
 # Restrict shortcut creation to dials-launcher, so no menu entry shipped by a
 # dependency is created by accident.
 menu_packages:

@@ -83,24 +83,34 @@ before anything is uploaded.
 
 ## How construct.yaml uses it
 
-`construct.yaml` lists `dials-launcher =={{ version }}` in `specs` and names it
-in `menu_packages`; the `post_install:` lines are gone. `menu_packages`
-restricts shortcut creation to this package, so no menu entry shipped by a
-dependency is created by accident.
-
-Because the package is not on conda-forge, `construct.yaml` also prepends the
-channel it was published to:
+`construct.yaml` names the package in `menu_packages` and lists it in `specs`,
+qualified with the channel it is published to since it is not on conda-forge:
 
 ```yaml
-{% set launcher_channel = environ.get("DIALS_LAUNCHER_CHANNEL", "dials") %}
 channels:
-  - "https://conda.anaconda.org/{{ launcher_channel }}/"
   - "https://conda.anaconda.org/conda-forge/"
+specs:
+  - dials =={{ version }}
+  - xia2
+  - DiamondLightSource::dials-launcher =={{ version }}
+menu_packages:
+  - dials-launcher
 ```
 
-So **the package must be published before the installers are built**, and for
-the same version. The Build installers workflow takes the channel as an input
-(`launcher_channel`) to match.
+Note that `DiamondLightSource` is **not** in `channels`. The `channel::`
+qualifier restricts that one spec to that one channel, so the channel is never
+consulted for anything else — DiamondLightSource carries packages whose names
+collide with conda-forge, and adding it to `channels` would let those shadow
+the conda-forge builds the installer is supposed to ship. `dials-launcher`'s
+own dependencies still resolve from conda-forge like everything else.
+
+`menu_packages` restricts shortcut creation to this package, so no menu entry
+shipped by a dependency is created by accident. The `post_install:` lines that
+used to run `post.sh` / `post.bat` are gone.
+
+**The package must be published before the installers are built**, and for the
+same version — the `==` pin means the solve fails otherwise. The channel is
+fixed in `specs`, not settable at dispatch time.
 
 ## Known limitations
 
