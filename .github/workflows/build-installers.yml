@@ -12,7 +12,7 @@ on:
           anaconda.org channel to pull dials-launcher from. Must already hold
           a build of dials-launcher matching the version above.
         required: true
-        default: dials
+        default: DiamondLightSource
 
 jobs:
   build:

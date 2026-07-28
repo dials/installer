@@ -1,5 +1,5 @@
 {% set version = environ.get("DIALS_VERSION", "3.29.0") %}
-{% set launcher_channel = environ.get("DIALS_LAUNCHER_CHANNEL", "dials") %}
+{% set launcher_channel = environ.get("DIALS_LAUNCHER_CHANNEL", "DiamondLightSource") %}
 name: DIALS
 version: "{{ version }}"
 channels:
