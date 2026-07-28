@@ -4,7 +4,8 @@ name: DIALS
 version: "{{ version }}"
 channels:
   # dials-launcher is built from conda-recipe/ and published by the
-  # "Build conda package" workflow; everything else comes from conda-forge.
+  # "Build dials-launcher package" workflow; everything else comes from
+  # conda-forge.
   - "https://conda.anaconda.org/{{ launcher_channel }}/"
   - "https://conda.anaconda.org/conda-forge/"
 license_file: LICENSE

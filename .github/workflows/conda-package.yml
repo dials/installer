@@ -1,4 +1,4 @@
-name: Build conda package
+name: Build dials-launcher package
 
 on:
   push:
@@ -125,8 +125,11 @@ jobs:
           channels: conda-forge
           conda-remove-defaults: true
 
+      # Unlike conda-build in the build job, anaconda-client is a plain
+      # executable rather than a conda subcommand, so it has to land in the
+      # environment setup-miniconda activates -- base is not on PATH there.
       - name: Install anaconda-client
-        run: conda install -y -n base anaconda-client
+        run: conda install -y anaconda-client
 
       - name: Upload
         env:
