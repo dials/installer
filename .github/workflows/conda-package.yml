@@ -69,7 +69,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v4
@@ -91,8 +91,11 @@ jobs:
         env:
           CONDA_BLD_PATH: ${{ runner.os == 'Windows' && 'C:\bld' || format('{0}/bld', runner.temp) }}
 
+      - name: List built packages
+        run: ls -l "dist/${{ matrix.subdir }}"
+
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: conda-package-${{ matrix.subdir }}
           path: |
@@ -110,7 +113,7 @@ jobs:
         shell: bash -el {0}
     steps:
       - name: Collect packages
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           path: dist
           pattern: conda-package-*
