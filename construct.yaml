@@ -27,3 +27,4 @@ specs:
 # dependency is created by accident.
 menu_packages:
   - dials-launcher
+  - dui2
