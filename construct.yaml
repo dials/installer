@@ -8,11 +8,22 @@ license_file: LICENSE
 welcome_image: dials_logo_164x314.png
 header_image: dials_header_150x57.png
 icon_image: dials_icon_256x256.png
-post_install: post.sh  # [unix]
-post_install: post.bat # [win]
 default_prefix: "$HOME/dials/v{{ version }}"  # [unix]
 installer_type: all
 specs:
   - dials =={{ version }}
   - xia2
   - dui2
+  # Ships dialsbin/, setpaths.*, dials_env.* and the menu entry -- the work
+  # post.sh/post.bat used to do at install time.
+  #
+  # Qualified with channel:: rather than adding DiamondLightSource to
+  # `channels` above, deliberately: that channel carries packages whose names
+  # collide with conda-forge, and this way it is consulted for this one spec
+  # only. Everything else, including this package's dependencies, still
+  # resolves from conda-forge alone.
+  - DiamondLightSource::dials-launcher =={{ version }}
+# Restrict shortcut creation to dials-launcher, so no menu entry shipped by a
+# dependency is created by accident.
+menu_packages:
+  - dials-launcher

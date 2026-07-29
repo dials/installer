@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schemas.conda.org/menuinst/menuinst-1-1-0.schema.json",
+  "menu_name": "DIALS",
+  "menu_items": [
+    {
+      "name": "Launch DIALS environment",
+      "description": "Open a shell with the DIALS programs on PATH",
+      "icon": "{{ MENU_DIR }}/dials.{{ ICON_EXT }}",
+      "command": ["{{ PREFIX }}/dials_env.sh"],
+      "working_dir": "{{ HOME }}",
+      "activate": false,
+      "terminal": true,
+      "platforms": {
+        "win": {
+          "command": ["{{ PREFIX }}/dials_env.bat"],
+          "desktop": false,
+          "quicklaunch": false
+        },
+        "linux": {
+          "Categories": ["Science", "Education"]
+        }
+      }
+    }
+  ]
+}

@@ -29,5 +29,6 @@ on your `PATH`. After installing, activate DIALS for the current session with:
 
 These scripts live in the installation directory.
 
-On Windows the installer also adds a **Launch DIALS environment** entry to the
-Start menu, which opens a command window with DIALS already on `PATH`.
+On Windows and Linux the installer also adds a **Launch DIALS environment**
+menu entry, which opens a shell with DIALS already on `PATH`. There is no
+equivalent menu entry on macOS; use `setpaths.sh` there.
